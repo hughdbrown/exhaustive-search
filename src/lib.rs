@@ -25,12 +25,7 @@ fn exhaustive_search_helper(
     let right = exhaustive_search_helper(items, i + 1, limit_weight, weight + item.weight, value + item.value, &rpath);
     match (left, right) {
         (Ok(lvalue), Ok(rvalue)) => {
-            if lvalue.2 > rvalue.2 {
-                return Ok(lvalue);
-            }
-            else {
-                return Ok(rvalue);
-            }
+            return Ok(if lvalue.2 > rvalue.2 { lvalue } else { rvalue });
         },
         (Ok(lvalue), Err(())) => return Ok(lvalue),
         (Err(()), Ok(rvalue)) => return Ok(rvalue),
