@@ -1,6 +1,7 @@
-use knapsack_utils::Item;
-
-type SearchResult =  (Vec<usize>, usize, u64);
+use knapsack_utils::{
+    Item,
+    SearchResult,
+};
 
 fn exhaustive_search_helper(
     items: &[Item],
@@ -12,17 +13,23 @@ fn exhaustive_search_helper(
 ) -> Result<SearchResult, ()>
 {
     if weight > limit_weight {
-        return Err(()); 
+        return Err(());
     }
     if i >= items.len() {
         return Ok((path.to_vec(), weight, value));
     }
 
+    // Try without this element
+    let left = exhaustive_search_helper(items, i + 1, limit_weight, weight, value, path);
+
+    // Try with this element
+    // Make a new copy of the immutable path argument that has `i` appended.
     let item = &items[i];
     let mut rpath: Vec<usize> = path.to_vec();
     rpath.push(i);
-    let left = exhaustive_search_helper(items, i + 1, limit_weight, weight, value, path);
     let right = exhaustive_search_helper(items, i + 1, limit_weight, weight + item.weight, value + item.value, &rpath);
+
+    // Which is better?
     match (left, right) {
         (Ok(lvalue), Ok(rvalue)) => {
             return Ok(if lvalue.2 > rvalue.2 { lvalue } else { rvalue });
