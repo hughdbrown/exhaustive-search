@@ -16,18 +16,19 @@ fn exhaustive_search_helper(
         return Err(());
     }
     if i >= items.len() {
-        return Ok((path.to_vec(), weight, value));
+        let result: SearchResult = (path.to_vec(), weight, value);
+        return Ok(result);
     }
 
     // Try without this element
-    let left = exhaustive_search_helper(items, i + 1, limit_weight, weight, value, path);
+    let left: Result<SearchResult, ()> = exhaustive_search_helper(items, i + 1, limit_weight, weight, value, path);
 
     // Try with this element
     // Make a new copy of the immutable path argument that has `i` appended.
     let item = &items[i];
     let mut rpath: Vec<usize> = path.to_vec();
     rpath.push(i);
-    let right = exhaustive_search_helper(items, i + 1, limit_weight, weight + item.weight, value + item.value, &rpath);
+    let right: Result<SearchResult, ()> = exhaustive_search_helper(items, i + 1, limit_weight, weight + item.weight, value + item.value, &rpath);
 
     // Which is better?
     match (left, right) {
